@@ -5,38 +5,59 @@ import com.company.dao.inter.SkillDaoInter;
 import com.company.entity.Skill;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SkillDaoImpl extends AbstractDAO implements SkillDaoInter {
+
     @Override
     public List<Skill> getAll() {
-        List<Skill> skills=new ArrayList<Skill>();
+        List<Skill> skills = new ArrayList<Skill>();
 
-        try(Connection c=connect()) {
-            Statement stmt=c.createStatement();
+        try (Connection c = connect()) {
+            Statement stmt = c.createStatement();
             stmt.execute("SELECT * from skill");
 
-            ResultSet rs=stmt.getResultSet();
-            while (rs.next()){
-                Skill skill=getSkill(rs);
+            ResultSet rs = stmt.getResultSet();
+            while (rs.next()) {
+                Skill skill = getSkill(rs);
                 skills.add(skill);
             }
-        }
-        catch (Exception exp) {
+        } catch (Exception exp) {
             exp.printStackTrace();
         }
 
         return skills;
     }
 
-    private Skill getSkill(ResultSet rs) throws Exception {
-        int id=rs.getInt("id");
-        String name=rs.getString("name");
+    public boolean insertSkill(Skill skill) {
+        boolean result = false;
+        try (Connection c = connect()) {
+            PreparedStatement stmt = c.prepareStatement("INSERT INTO skill(name) VALUES (?)",Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, skill.getName());
+            result = stmt.execute();
+            ResultSet generatedKeys = stmt.getGeneratedKeys();
 
-        return new Skill(id,name);
+            if (generatedKeys.next()) {
+                skill.setId(generatedKeys.getInt(1));
+            }
+
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+        return result;
     }
+
+    
+
+    private Skill getSkill(ResultSet rs) throws Exception {
+        int id = rs.getInt("id");
+        String name = rs.getString("name");
+
+        return new Skill(id, name);
+    }
+
 }

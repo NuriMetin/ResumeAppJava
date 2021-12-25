@@ -87,7 +87,7 @@ public class UserDaoImpl extends AbstractDAO implements UserDaoInter {
     @Override
     public boolean updateUser(User u) {
         try (Connection c = connect()) {
-            PreparedStatement stmt = c.prepareStatement("UPDATE users SET name=?, surname=?,email=?,phone=?, profileDescription=?,address=?,birthdate=? WHERE id=?");
+            PreparedStatement stmt = c.prepareStatement("UPDATE users SET name=?, surname=?,email=?,phone=?, profileDescription=?,address=?,birthdate=?,birthplace_id=?,nationality_id=? WHERE id=?");
             stmt.setString(1, u.getName());
             stmt.setString(2, u.getSurname());
             stmt.setString(3, u.getEmail());
@@ -95,7 +95,9 @@ public class UserDaoImpl extends AbstractDAO implements UserDaoInter {
             stmt.setString(5, u.getProfileDescription());
             stmt.setString(6, u.getAddress());
             stmt.setDate(7, u.getBirthDate());
-            stmt.setInt(8, u.getId());
+            stmt.setInt(8, u.getBirthPlace().getId());
+            stmt.setInt(9, u.getNationality().getId());
+            stmt.setInt(10, u.getId());
             return stmt.execute();
         } catch (Exception exp) {
             exp.printStackTrace();
