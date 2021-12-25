@@ -1,6 +1,7 @@
 package com.company.dao.inter;
 
-import com.company.bean.User;
+import com.company.entity.User;
+import com.company.entity.UserSkill;
 
 import java.util.List;
 
